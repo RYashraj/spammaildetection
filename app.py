@@ -299,7 +299,14 @@ with tab3:
 # Session state — persists results across reruns
 # ---------------------------------------------------------------------------
 if "result" not in st.session_state:
-    st.session_state.result = None   # None means no result yet
+    st.session_state.result = None
+
+# Callback: runs BEFORE page re-renders (so widgets haven't been drawn yet)
+def clear_all():
+    st.session_state.result   = None
+    st.session_state.t1_sender  = ""
+    st.session_state.t1_subject = ""
+    st.session_state.t1_body    = ""
 
 # ---------------------------------------------------------------------------
 # Analyse + Clear Buttons
@@ -310,16 +317,7 @@ col1, col2, col3 = st.columns([2, 1, 1])
 with col2:
     analyse = st.button("🔍 Analyse Email", type="primary", use_container_width=True)
 with col3:
-    clear = st.button("🗑️ Clear", use_container_width=True)
-
-# Handle Clear
-if clear:
-    st.session_state.result = None
-    # Clear all input fields
-    for key in ["t1_sender", "t1_subject", "t1_body"]:
-        if key in st.session_state:
-            st.session_state[key] = ""
-    st.rerun()
+    st.button("🗑️ Clear", use_container_width=True, on_click=clear_all)
 
 
 # Handle Analyse
