@@ -97,10 +97,10 @@ def header_bar(slide, title, subtitle=None):
         add_textbox(slide, subtitle, 0.4, 0.82, 12.5, 0.45,
                     font_size=14, color=LIGHT_BLUE, align=PP_ALIGN.LEFT)
 
-def footer(slide, page_num, total=12):
+def footer(slide, page_num, total=13):
     add_rect(slide, 0, 7.18, 13.33, 0.32, NAVY)
-    add_textbox(slide, "Spam Email Detection  |  D2D Batch  |  Sem 5",
-                0.3, 7.2, 9, 0.28, font_size=10, color=MID_GRAY)
+    add_textbox(slide, "AIT  |  Python for Data Science (BE05000231)",
+                0.3, 7.2, 10, 0.28, font_size=10, color=MID_GRAY)
     add_textbox(slide, f"{page_num} / {total}",
                 12.5, 7.2, 0.8, 0.28, font_size=10, color=MID_GRAY,
                 align=PP_ALIGN.RIGHT)
@@ -116,32 +116,121 @@ add_rect(s, 0, 0, 13.33, 7.5, NAVY)
 # blue accent strip on left
 add_rect(s, 0, 0, 0.25, 7.5, BLUE)
 
-# email icon placeholder (big ✉ emoji)
-add_textbox(s, "📧", 0.8, 0.9, 2, 2, font_size=80, color=WHITE)
+# College name
+add_textbox(s, "Ahmedabad Institute of Technology",
+            0.5, 0.18, 12.5, 0.55,
+            font_size=15, bold=True, color=LIGHT_BLUE, align=PP_ALIGN.CENTER)
+add_textbox(s, "Department of Computer Engineering",
+            0.5, 0.68, 12.5, 0.4,
+            font_size=12, color=MID_GRAY, align=PP_ALIGN.CENTER)
+
+# thin divider
+add_rect(s, 1.5, 1.1, 10.3, 0.03, BLUE)
+
+# email icon
+add_textbox(s, "📧", 0.6, 1.3, 1.6, 1.5, font_size=64, color=WHITE)
 
 # Title
 add_textbox(s, "Spam Email Detection System",
-            3.0, 1.3, 9.8, 1.2,
-            font_size=38, bold=True, color=WHITE)
-
+            2.4, 1.35, 10.5, 1.0,
+            font_size=34, bold=True, color=WHITE)
 add_textbox(s, "AI-Powered Mail Classifier using NLP & Naive Bayes",
-            3.0, 2.55, 9.8, 0.7,
-            font_size=18, color=LIGHT_BLUE)
+            2.4, 2.35, 10.5, 0.5,
+            font_size=16, color=LIGHT_BLUE)
 
 # divider
-add_rect(s, 3.0, 3.4, 7, 0.04, BLUE)
+add_rect(s, 0.5, 3.0, 12.3, 0.04, BLUE)
 
-# Team & batch info
-add_textbox(s, "D2D Batch  |  Sem 5  |  PBL Project",
-            3.0, 3.55, 9, 0.5, font_size=15, color=MID_GRAY)
+# Subject info
+add_textbox(s, "Subject: Python for Data Science  |  Code: BE05000231",
+            0.5, 3.15, 12.3, 0.42,
+            font_size=13, color=LIGHT_BLUE, align=PP_ALIGN.CENTER)
+add_textbox(s, "Sem 5  |  BE  |  B Division  |  B2 Batch",
+            0.5, 3.55, 12.3, 0.4,
+            font_size=13, color=MID_GRAY, align=PP_ALIGN.CENTER)
 
-add_textbox(s, "Team Members:   Yashraj  ·  Shreyas  ·  Meet  ·  Vishwajeet",
-            3.0, 4.1, 9.5, 0.5, font_size=16, bold=True, color=WHITE)
+# divider
+add_rect(s, 0.5, 4.05, 12.3, 0.04, RGBColor(0x2D, 0x35, 0x61))
+
+# Submitted to / HOD in two columns
+add_textbox(s, "Submitted To:",
+            0.7, 4.2, 5.5, 0.38,
+            font_size=12, color=MID_GRAY)
+add_textbox(s, "Prof. Khusharth Oza",
+            0.7, 4.56, 5.5, 0.45,
+            font_size=16, bold=True, color=WHITE)
+
+add_textbox(s, "HOD — Computer Engineering:",
+            7.0, 4.2, 5.8, 0.38,
+            font_size=12, color=MID_GRAY)
+add_textbox(s, "Dr. Harsha Padheriya",
+            7.0, 4.56, 5.8, 0.45,
+            font_size=16, bold=True, color=WHITE)
+
+# divider
+add_rect(s, 0.5, 5.18, 12.3, 0.04, RGBColor(0x2D, 0x35, 0x61))
+
+# Team members preview
+add_textbox(s, "Project By:",
+            0.7, 5.32, 3, 0.35, font_size=12, color=MID_GRAY)
+add_textbox(s,
+    "Yashrajsinh Rajput  ·  Vishwajeet  ·  Shreyas Tavre  ·  Meet Shah",
+    0.7, 5.67, 12.0, 0.45,
+    font_size=15, bold=True, color=WHITE)
 
 footer(s, 1)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 2 — Problem Statement
+# SLIDE 2 — Team Details
+# ─────────────────────────────────────────────────────────────────────────────
+s = prs.slides.add_slide(BLANK)
+add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
+header_bar(s, "Team Details", "Ahmedabad Institute of Technology  |  Sem 5, BE, B Div, B2 Batch")
+
+# college info box
+add_rect(s, 0.4, 1.55, 12.53, 0.9, NAVY)
+add_textbox(s, "Subject: Python for Data Science  |  Code: BE05000231",
+            0.6, 1.6, 12.1, 0.42, font_size=14, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
+add_textbox(s, "Submitted To: Prof. Khusharth Oza       |       HOD CE: Dr. Harsha Padheriya",
+            0.6, 2.0, 12.1, 0.38, font_size=12, color=LIGHT_BLUE, align=PP_ALIGN.CENTER)
+
+# Member cards
+members_info = [
+    ("Yashrajsinh Rajput", "250023107087", "Data Engineer",   "Phase 1 — Data Preparation",     BLUE),
+    ("Vishwajeet",         "250023107086", "UI Developer",    "Phase 4 & 5 — Web Application",   ACCENT),
+    ("Shreyas Tavre",      "250023107076", "Data Analyst",    "Phase 2 — EDA & Vectorization",   RGBColor(0x70, 0x5C, 0xDB)),
+    ("Meet Shah",          "250023107067", "ML Engineer",     "Phase 3 — Model Training",        GREEN),
+]
+
+bw = 2.9
+bh = 4.1
+gap = 0.36
+sy = 2.65
+
+for i, (name, enroll, role, phase, color) in enumerate(members_info):
+    x = 0.35 + i * (bw + gap)
+    # color top bar
+    add_rect(s, x, sy, bw, 1.0, color)
+    add_textbox(s, name,  x+0.1, sy+0.08, bw-0.2, 0.5,
+                font_size=16, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
+    add_textbox(s, role,  x+0.1, sy+0.58, bw-0.2, 0.35,
+                font_size=12, color=WHITE, align=PP_ALIGN.CENTER)
+    # white body
+    add_rect(s, x, sy+1.0, bw, bh-1.0, WHITE)
+    # enrollment
+    add_textbox(s, "Enrollment No.", x+0.15, sy+1.1, bw-0.3, 0.35,
+                font_size=11, color=MID_GRAY)
+    add_textbox(s, enroll, x+0.15, sy+1.42, bw-0.3, 0.45,
+                font_size=16, bold=True, color=NAVY)
+    # phase
+    add_rect(s, x+0.15, sy+2.05, bw-0.3, 0.04, LIGHT_BLUE)
+    add_textbox(s, "Contributed To:", x+0.15, sy+2.2, bw-0.3, 0.35,
+                font_size=11, color=MID_GRAY)
+    add_textbox(s, phase, x+0.15, sy+2.55, bw-0.3, 0.45,
+                font_size=13, bold=True, color=color)
+
+footer(s, 2)
+
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -183,10 +272,10 @@ add_textbox(s,
     "whether an email is Spam or Ham (safe) — using Machine Learning.",
     4.6, 4.9, 8.3, 1.2, font_size=15, color=DARK_TEXT)
 
-footer(s, 2)
+footer(s, 3)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 3 — Our Solution (Overview)
+# SLIDE 4 — Our Solution (Overview)
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -228,10 +317,10 @@ add_bullet_box(s, [
     "Same NLP pipeline applies to emails — technique is identical",
 ], 7.0, 4.95, 5.8, 1.6, font_size=14)
 
-footer(s, 3)
+footer(s, 4)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 4 — Tech Stack
+# SLIDE 5 — Tech Stack
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -269,10 +358,10 @@ for i, (name, desc, icon) in enumerate(techs):
     add_textbox(s, desc, x + 0.1, y + 1.1, box_w - 0.2, 0.8,
                 font_size=12, color=MID_GRAY)
 
-footer(s, 4)
+footer(s, 5)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 5 — Project Pipeline
+# SLIDE 6 — Project Pipeline
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -309,14 +398,14 @@ add_textbox(s,
     "Each phase produces an output that feeds directly into the next phase — a complete, end-to-end Machine Learning pipeline.",
     0.4, 4.85, 12.5, 0.6, font_size=14, color=DARK_TEXT, align=PP_ALIGN.CENTER)
 
-footer(s, 5)
+footer(s, 6)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 6 — Phase 1: Data Preparation (Yashraj)
+# SLIDE 7 — Phase 1: Data Preparation (Yashraj)
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
-header_bar(s, "Phase 1 — Data Preparation", "File: phase1_data_preparation.py  |  Lead: Yashraj")
+header_bar(s, "Phase 1 — Data Preparation", "File: phase1_data_preparation.py  |  Lead: Yashrajsinh Rajput")
 
 add_rect(s, 0.4, 1.6, 5.9, 5.3, WHITE)
 add_textbox(s, "What was done?", 0.7, 1.75, 5.3, 0.5,
@@ -352,14 +441,14 @@ add_bullet_box(s, [
     "  model learns patterns, not exact spellings",
 ], 7.0, 5.0, 5.8, 1.7, font_size=14)
 
-footer(s, 6)
+footer(s, 7)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 7 — Phase 2: EDA & Vectorization (Shreyas)
+# SLIDE 8 — Phase 2: EDA & Vectorization (Shreyas)
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
-header_bar(s, "Phase 2 — EDA & Vectorization", "File: phase2_eda_vectorization.py  |  Lead: Shreyas")
+header_bar(s, "Phase 2 — EDA & Vectorization", "File: phase2_eda_vectorization.py  |  Lead: Shreyas Tavre")
 
 add_rect(s, 0.4, 1.6, 5.9, 5.3, WHITE)
 add_textbox(s, "Exploratory Data Analysis (EDA)", 0.7, 1.75, 5.3, 0.5,
@@ -401,14 +490,14 @@ add_bullet_box(s, [
     "everywhere → low IDF → low score → ignored.",
 ], 7.0, 2.95, 5.8, 3.5, font_size=14)
 
-footer(s, 7)
+footer(s, 8)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 8 — Phase 3: Model Training (Meet)
+# SLIDE 9 — Phase 3: Model Training (Meet)
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
-header_bar(s, "Phase 3 — ML Model Training", "File: phase3_modeling.py  |  Lead: Meet")
+header_bar(s, "Phase 3 — ML Model Training", "File: phase3_modeling.py  |  Lead: Meet Shah")
 
 add_rect(s, 0.4, 1.6, 5.9, 5.3, WHITE)
 add_textbox(s, "Model: Multinomial Naive Bayes", 0.7, 1.75, 5.5, 0.5,
@@ -450,10 +539,10 @@ add_bullet_box(s, [
     "  True Spam:  124  |  False Ham:  16",
 ], 7.0, 2.35, 5.8, 4.5, font_size=14)
 
-footer(s, 8)
+footer(s, 9)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 9 — Phase 4 & 5: Web App (Vishwajeet)
+# SLIDE 10 — Phase 4 & 5: Web App (Vishwajeet)
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -496,14 +585,14 @@ add_bullet_box(s, [
     "Result shows: SPAM 🚨 or HAM ✅ + confidence %",
 ], 7.0, 2.35, 5.8, 4.5, font_size=14)
 
-footer(s, 9)
+footer(s, 10)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 10 — Team Contributions
+# SLIDE 11 — Team Contributions
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
-header_bar(s, "Team Contributions", "D2D Batch  |  Sem 5  |  Each member owned a complete phase")
+header_bar(s, "Team Contributions", "AIT  |  Sem 5, BE, B Div, B2 Batch  |  Each member owned a complete phase")
 
 members = [
     ("Yashraj",     "Data Engineer",    BLUE,
@@ -550,10 +639,10 @@ for i, (name, role, color, phase, bullets) in enumerate(members):
     add_bullet_box(s, bullets, x+0.15, sy+1.6, bw-0.3, 3.0,
                    font_size=12.5, color=DARK_TEXT, bullet="• ")
 
-footer(s, 10)
+footer(s, 11)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 11 — Results & Key Learnings
+# SLIDE 12 — Results & Key Learnings
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, LIGHT_GRAY)
@@ -597,10 +686,10 @@ add_bullet_box(s, [
     "Future: Browser extension for in-browser detection",
 ], 7.0, 3.95, 5.8, 2.8, font_size=14)
 
-footer(s, 11)
+footer(s, 12)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SLIDE 12 — Thank You
+# SLIDE 13 — Thank You
 # ─────────────────────────────────────────────────────────────────────────────
 s = prs.slides.add_slide(BLANK)
 add_rect(s, 0, 0, 13.33, 7.5, NAVY)
@@ -612,26 +701,26 @@ add_textbox(s, "Thank You!", 0.8, 1.5, 11.5, 1.4,
 add_rect(s, 3.5, 3.1, 6.33, 0.05, BLUE)
 
 add_textbox(s,
-    "Spam Email Detection System\nD2D Batch  |  Sem 5  |  PBL Project",
+    "Spam Email Detection System\nPython for Data Science (BE05000231)  |  Sem 5, BE, B Div, B2 Batch",
     0.8, 3.3, 11.5, 0.9,
-    font_size=18, color=LIGHT_BLUE, align=PP_ALIGN.CENTER)
+    font_size=16, color=LIGHT_BLUE, align=PP_ALIGN.CENTER)
 
 add_textbox(s,
-    "Yashraj   ·   Shreyas   ·   Meet   ·   Vishwajeet",
+    "Yashrajsinh Rajput  ·  Vishwajeet  ·  Shreyas Tavre  ·  Meet Shah",
     0.8, 4.35, 11.5, 0.6,
     font_size=20, bold=True, color=WHITE, align=PP_ALIGN.CENTER)
 
 add_textbox(s,
-    "Built with Python  ·  NLTK  ·  Scikit-learn  ·  Streamlit",
+    "Submitted To: Prof. Khusharth Oza    |    HOD CE: Dr. Harsha Padheriya",
     0.8, 5.1, 11.5, 0.5,
-    font_size=14, color=MID_GRAY, align=PP_ALIGN.CENTER)
+    font_size=13, color=MID_GRAY, align=PP_ALIGN.CENTER)
 
 add_textbox(s,
-    "github.com/RYashraj/spammaildetection",
+    "Ahmedabad Institute of Technology  |  github.com/RYashraj/spammaildetection",
     0.8, 5.75, 11.5, 0.5,
     font_size=13, color=LIGHT_BLUE, align=PP_ALIGN.CENTER, italic=True)
 
-footer(s, 12)
+footer(s, 13)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Save
