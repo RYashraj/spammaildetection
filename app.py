@@ -296,15 +296,29 @@ with tab3:
             )
 
 # ---------------------------------------------------------------------------
-# Analyse Button — works across all tabs
+# Session state — persists results across reruns
+# ---------------------------------------------------------------------------
+if "result" not in st.session_state:
+    st.session_state.result = None   # None means no result yet
+
+# ---------------------------------------------------------------------------
+# Analyse + Clear Buttons
 # ---------------------------------------------------------------------------
 st.markdown("---")
-col1, col2 = st.columns([3, 1])
+col1, col2, col3 = st.columns([2, 1, 1])
+
 with col2:
     analyse = st.button("🔍 Analyse Email", type="primary", use_container_width=True)
+with col3:
+    clear = st.button("🗑️ Clear", use_container_width=True)
 
+# Handle Clear
+if clear:
+    st.session_state.result = None
+    st.rerun()
+
+# Handle Analyse
 if analyse:
-    # Combine all available fields: subject is weighted more by repeating it
     combined = f"{subject_val} {subject_val} {sender_val} {body_val}".strip()
 
     if not combined.strip():
@@ -316,35 +330,52 @@ if analyse:
         if label is None:
             st.error("No meaningful text found after cleaning (only numbers/punctuation).")
         else:
-            ham_pct = 100 - spam_pct
+            # Store result in session state
+            st.session_state.result = {
+                "label":      label,
+                "spam_pct":   spam_pct,
+                "cleaned":    cleaned,
+                "sender":     sender_val,
+                "subject":    subject_val,
+            }
 
-            # ── Result Card ───────────────────────────────────────────────
-            if label == 1:
-                st.markdown(f"""
-                <div class="result-spam">
-                  <p class="result-title">🚨 SPAM DETECTED</p>
-                  <p class="result-conf">Spam confidence: <b>{spam_pct:.1f}%</b> &nbsp;|&nbsp; Ham confidence: {ham_pct:.1f}%</p>
-                </div>""", unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div class="result-ham">
-                  <p class="result-title">✅ SAFE — Ham</p>
-                  <p class="result-conf">Ham confidence: <b>{ham_pct:.1f}%</b> &nbsp;|&nbsp; Spam confidence: {spam_pct:.1f}%</p>
-                </div>""", unsafe_allow_html=True)
+# ---------------------------------------------------------------------------
+# Result Display — only shown when a result exists in session state
+# ---------------------------------------------------------------------------
+if st.session_state.result:
+    r       = st.session_state.result
+    label   = r["label"]
+    spam_pct = r["spam_pct"]
+    ham_pct = 100 - spam_pct
+    cleaned  = r["cleaned"]
 
-            # ── Confidence Bar ────────────────────────────────────────────
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown(f"**Spam probability:** {spam_pct:.1f}%")
-            st.progress(int(spam_pct))
+    # ── Result Card ───────────────────────────────────────────────────────
+    if label == 1:
+        st.markdown(f"""
+        <div class="result-spam">
+          <p class="result-title">🚨 SPAM DETECTED</p>
+          <p class="result-conf">Spam confidence: <b>{spam_pct:.1f}%</b> &nbsp;|&nbsp; Ham confidence: {ham_pct:.1f}%</p>
+        </div>""", unsafe_allow_html=True)
+    else:
+        st.markdown(f"""
+        <div class="result-ham">
+          <p class="result-title">✅ SAFE — Ham</p>
+          <p class="result-conf">Ham confidence: <b>{ham_pct:.1f}%</b> &nbsp;|&nbsp; Spam confidence: {spam_pct:.1f}%</p>
+        </div>""", unsafe_allow_html=True)
 
-            # ── Details Expander ──────────────────────────────────────────
-            with st.expander("Show analysis details"):
-                if sender_val:
-                    st.markdown(f"**Sender:** `{sender_val}`")
-                if subject_val:
-                    st.markdown(f"**Subject:** `{subject_val}`")
-                st.markdown(f"**Cleaned text fed to model:**")
-                st.code(cleaned[:500] + ("..." if len(cleaned) > 500 else ""), language=None)
+    # ── Confidence Bar ────────────────────────────────────────────────────
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown(f"**Spam probability:** {spam_pct:.1f}%")
+    st.progress(int(spam_pct))
+
+    # ── Details Expander ──────────────────────────────────────────────────
+    with st.expander("Show analysis details"):
+        if r["sender"]:
+            st.markdown(f"**Sender:** `{r['sender']}`")
+        if r["subject"]:
+            st.markdown(f"**Subject:** `{r['subject']}`")
+        st.markdown("**Cleaned text fed to model:**")
+        st.code(cleaned[:500] + ("..." if len(cleaned) > 500 else ""), language=None)
 
 # ---------------------------------------------------------------------------
 # Footer
@@ -352,7 +383,7 @@ if analyse:
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown(
     "<p style='text-align:center;color:#374151;font-size:0.8rem;'>"
-    "Spam Email Detector · PBL Project · All processing is 100% local"
+    "Spam Email Detector &middot; PBL Project &middot; All processing is 100% local"
     "</p>",
     unsafe_allow_html=True
 )
