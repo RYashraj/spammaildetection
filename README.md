@@ -23,7 +23,7 @@ PBLPROJ/
 ├── phase1_data_preparation.py   # Script: Clean text, lemmatize, encode labels
 ├── phase2_eda_vectorization.py  # Script: EDA graphs, TF-IDF, data splitting
 ├── phase3_modeling.py           # Script: Train & tune MultinomialNB model
-├── app.py                       # Streamlit UI (Phase 4)
+├── app.py                       # Streamlit UI (Phase 4 & 5 - Multi-modal input, .eml parsing)
 │
 ├── requirements.txt             # Python dependencies
 └── spam_email_detection_project_plan.md  # Project phases & plan
@@ -73,7 +73,11 @@ To launch the Streamlit interface and test the spam detector live:
 streamlit run app.py
 ```
 
-This will open a local server in your web browser (usually at `http://localhost:8501`). Paste any text into the box to see if the AI classifies it as Spam or Ham!
+This will open a local server in your web browser (usually at `http://localhost:8501`). 
+
+### Features:
+- **Paste Text:** Manually enter the Sender, Subject, and Body to check for spam.
+- **Upload .eml File:** Download any email as a `.eml` file (from Gmail/Outlook) and upload it. The app will securely parse the Sender, Subject, and Body (without opening attachments) and analyze the entire context!
 
 ---
 *Project Built for PBL (Project-Based Learning)*
