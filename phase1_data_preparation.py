@@ -95,13 +95,13 @@ counts = df["label"].value_counts()
 print("\n[INFO] Class distribution after encoding:")
 print(f"  Ham  (0): {counts.get(0, 0):>5} ({counts.get(0, 0)/len(df)*100:.1f}%)")
 print(f"  Spam (1): {counts.get(1, 0):>5} ({counts.get(1, 0)/len(df)*100:.1f}%)")
-print(f"  Imbalance ratio (ham:spam) ≈ {counts.get(0, 0)/counts.get(1, 1):.1f}:1")
+print(f"  Imbalance ratio (ham:spam) ~ {counts.get(0, 0)/counts.get(1, 1):.1f}:1")
 
 # ---------------------------------------------------------------------------
 # 5. Save cleaned data
 # ---------------------------------------------------------------------------
 OUTPUT_PATH = os.path.join("data", "cleaned_spam.csv")
 df.to_csv(OUTPUT_PATH, index=False)
-print(f"\n[INFO] Cleaned dataset saved → '{OUTPUT_PATH}'")
+print(f"\n[INFO] Cleaned dataset saved -> '{OUTPUT_PATH}'")
 print(f"       Shape: {df.shape}")
 print(df.head())
