@@ -3,10 +3,10 @@ Phase 5 -- Upgraded Email-Focused UI
 Assigned to: Vishwajeet
 
 New Features:
-  - Multi-modal input: Paste Text / Upload .eml File / Upload Image (OCR)
+  - Two input modes: Paste Text / Upload .eml File
   - .eml auto-parsing: extracts Sender, Subject, Body automatically
-  - Image OCR: reads text out of spam poster images
   - Separate Subject + Sender + Body analysis
+  - Clear button resets all inputs and result
   - Premium email-style UI
 """
 
@@ -189,18 +189,7 @@ def parse_eml(file_bytes: bytes):
 
     return sender.strip(), subject.strip(), body.strip()
 
-# ---------------------------------------------------------------------------
-# OCR helper (optional — graceful fallback if Tesseract not installed)
-# ---------------------------------------------------------------------------
-def ocr_image(uploaded_file) -> str:
-    try:
-        import pytesseract
-        from PIL import Image
-        img  = Image.open(uploaded_file)
-        text = pytesseract.image_to_string(img)
-        return text.strip()
-    except Exception:
-        return ""
+
 
 # ---------------------------------------------------------------------------
 # Prediction helper
@@ -220,19 +209,18 @@ def predict(combined_text: str):
 st.markdown("""
 <div class="header-card">
   <h1>📧 Spam Email Detector</h1>
-  <p>AI-powered spam detection. Paste text, upload a .eml file, or scan an image — all processed locally, no data is ever sent anywhere.</p>
+  <p>AI-powered spam detection. Paste text or upload a .eml file — all processed locally, no data is ever sent anywhere.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------------------------
-# Tabs — three input modes
+# Tabs — two input modes
 # ---------------------------------------------------------------------------
-tab1, tab2, tab3 = st.tabs(["✏️  Paste / Type", "📁  Upload .eml File", "🖼️  Upload Image (OCR)"])
+tab1, tab2 = st.tabs(["✏️  Paste / Type", "📁  Upload .eml File"])
 
 sender_val  = ""
 subject_val = ""
 body_val    = ""
-ocr_status  = ""
 
 # ── Tab 1: Paste Text ──────────────────────────────────────────────────────
 with tab1:
@@ -258,55 +246,36 @@ with tab2:
 
     > ✅ **Safe:** Attachments inside the file are never opened or executed.
     """)
-    eml_file = st.file_uploader("Upload .eml file", type=["eml", "msg"], label_visibility="collapsed")
+    # Key changes on every clear so Streamlit creates a brand-new uploader (empty)
+    eml_key  = f"eml_upload_{st.session_state.get('eml_uploader_key', 0)}"
+    eml_file = st.file_uploader("Upload .eml file", type=["eml", "msg"],
+                                label_visibility="collapsed", key=eml_key)
 
     if eml_file is not None:
         file_bytes = eml_file.read()
         sender_val, subject_val, body_val = parse_eml(file_bytes)
-        st.success("Email parsed successfully! Fields auto-filled below:")
+        st.success("Email parsed successfully!")
         st.markdown(f"**From:** `{sender_val}`")
         st.markdown(f"**Subject:** `{subject_val}`")
         with st.expander("Preview extracted body text"):
             st.write(body_val[:1000] + ("..." if len(body_val) > 1000 else ""))
-
-# ── Tab 3: Image OCR ───────────────────────────────────────────────────────
-with tab3:
-    st.markdown("""
-    **For spam emails that contain only an image (poster/banner):**
-    Take a screenshot of the spam image, then upload it here.
-    The app will read the text out of the image using OCR and analyze it.
-    """)
-    img_file = st.file_uploader("Upload image (.png, .jpg, .jpeg)", type=["png", "jpg", "jpeg"],
-                                label_visibility="collapsed", key="ocr_upload")
-
-    if img_file is not None:
-        extracted = ocr_image(img_file)
-        if extracted:
-            body_val   = extracted
-            ocr_status = "success"
-            st.success("Text extracted from image successfully!")
-            with st.expander("Preview extracted text"):
-                st.write(extracted[:1000] + ("..." if len(extracted) > 1000 else ""))
-        else:
-            ocr_status = "fail"
-            st.warning(
-                "Could not extract text. Make sure **Tesseract** is installed:\n\n"
-                "Download from: https://github.com/UB-Mannheim/tesseract/wiki\n\n"
-                "Then add it to your System PATH and restart the app."
-            )
 
 # ---------------------------------------------------------------------------
 # Session state — persists results across reruns
 # ---------------------------------------------------------------------------
 if "result" not in st.session_state:
     st.session_state.result = None
+if "eml_uploader_key" not in st.session_state:
+    st.session_state.eml_uploader_key = 0
 
 # Callback: runs BEFORE page re-renders (so widgets haven't been drawn yet)
 def clear_all():
-    st.session_state.result   = None
-    st.session_state.t1_sender  = ""
-    st.session_state.t1_subject = ""
-    st.session_state.t1_body    = ""
+    st.session_state.result          = None
+    st.session_state.t1_sender       = ""
+    st.session_state.t1_subject      = ""
+    st.session_state.t1_body         = ""
+    # Increment key → Streamlit creates a brand-new empty file uploader
+    st.session_state.eml_uploader_key += 1
 
 # ---------------------------------------------------------------------------
 # Analyse + Clear Buttons
