@@ -315,7 +315,12 @@ with col3:
 # Handle Clear
 if clear:
     st.session_state.result = None
+    # Clear all input fields
+    for key in ["t1_sender", "t1_subject", "t1_body"]:
+        if key in st.session_state:
+            st.session_state[key] = ""
     st.rerun()
+
 
 # Handle Analyse
 if analyse:
