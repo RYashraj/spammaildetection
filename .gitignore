@@ -26,3 +26,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Local NLTK data
+nltk_data/
