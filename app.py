@@ -18,6 +18,8 @@ import email.policy
 import html
 from html.parser import HTMLParser
 import streamlit as st
+import pandas as pd
+import altair as alt
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -104,11 +106,18 @@ st.markdown("""
 # ---------------------------------------------------------------------------
 # NLTK setup
 # ---------------------------------------------------------------------------
+local_nltk_path = os.path.join(os.path.dirname(__file__), "nltk_data")
+if os.path.exists(local_nltk_path) and local_nltk_path not in nltk.data.path:
+    nltk.data.path.insert(0, local_nltk_path)
+
 @st.cache_resource
 def init_nltk():
-    nltk.download("stopwords", quiet=True)
-    nltk.download("wordnet",   quiet=True)
-    nltk.download("omw-1.4",   quiet=True)
+    try:
+        nltk.download("stopwords", quiet=True)
+        nltk.download("wordnet",   quiet=True)
+        nltk.download("omw-1.4",   quiet=True)
+    except Exception:
+        pass
 
 init_nltk()
 
@@ -202,6 +211,141 @@ def predict(combined_text: str):
     label       = model.predict(vec_input)[0]
     probs       = model.predict_proba(vec_input)[0]
     return label, probs[1] * 100, cleaned   # (label, spam_pct, cleaned_text)
+
+# ---------------------------------------------------------------------------
+# Visual Explainability & Feature Contribution Helpers (PBL / Academic Feature)
+# ---------------------------------------------------------------------------
+def get_feature_contributions(cleaned_text: str, top_n: int = 10) -> pd.DataFrame:
+    """
+    Extract vocabulary tokens from the input text and compute their mathematical
+    contribution to the Naive Bayes classification:
+      Impact = TF-IDF(w) * [log P(w|Spam) - log P(w|Ham)]
+    """
+    if not cleaned_text.strip():
+        return pd.DataFrame()
+
+    vec_input = vectorizer.transform([cleaned_text])
+    feature_indices = vec_input.nonzero()[1]
+
+    if len(feature_indices) == 0:
+        return pd.DataFrame()
+
+    feature_names = vectorizer.get_feature_names_out()
+    data = []
+
+    for idx in feature_indices:
+        word = str(feature_names[idx])
+        tfidf = float(vec_input[0, idx])
+        # Naive Bayes log-likelihood ratio: log P(w | Spam) - log P(w | Ham)
+        log_ratio = float(model.feature_log_prob_[1, idx] - model.feature_log_prob_[0, idx])
+        impact = tfidf * log_ratio
+        direction = "Spam Indicator" if impact > 0 else "Ham Indicator"
+
+        data.append({
+            "Word": word,
+            "Impact Score": round(impact, 4),
+            "Magnitude": abs(impact),
+            "Direction": direction,
+            "TF-IDF": round(tfidf, 4),
+            "Log-Ratio": round(log_ratio, 4),
+        })
+
+    df = pd.DataFrame(data)
+    # Sort by absolute impact magnitude to find the most influential words
+    df = df.sort_values(by="Magnitude", ascending=False).head(top_n)
+    # Re-sort by Impact Score for clear vertical display in Altair
+    df = df.sort_values(by="Impact Score", ascending=True)
+    return df
+
+
+def build_confidence_chart(spam_pct: float, ham_pct: float):
+    """
+    Native Streamlit / Altair horizontal probability distribution chart.
+    """
+    df_conf = pd.DataFrame([
+        {"Class": "Ham (Safe)", "Probability": round(ham_pct, 1)},
+        {"Class": "Spam",       "Probability": round(spam_pct, 1)}
+    ])
+
+    chart = (
+        alt.Chart(df_conf)
+        .mark_bar(cornerRadiusEnd=6, height=28)
+        .encode(
+            x=alt.X("Probability:Q", scale=alt.Scale(domain=[0, 100]), title="Prediction Probability (%)"),
+            y=alt.Y("Class:N", sort=["Ham (Safe)", "Spam"], title=""),
+            color=alt.Color(
+                "Class:N",
+                scale=alt.Scale(
+                    domain=["Ham (Safe)", "Spam"],
+                    range=["#22c55e", "#ef4444"]
+                ),
+                legend=None
+            ),
+            tooltip=[
+                alt.Tooltip("Class:N", title="Category"),
+                alt.Tooltip("Probability:Q", title="Probability (%)", format=".1f")
+            ]
+        )
+        .properties(height=110)
+    )
+
+    text = (
+        alt.Chart(df_conf)
+        .mark_text(
+            align="left",
+            baseline="middle",
+            dx=6,
+            color="#e2e8f0",
+            fontWeight="bold",
+            fontSize=12
+        )
+        .encode(
+            x=alt.X("Probability:Q"),
+            y=alt.Y("Class:N", sort=["Ham (Safe)", "Spam"]),
+            text=alt.Text("Probability:Q", format=".1f")
+        )
+    )
+    return chart + text
+
+
+def build_word_impact_chart(df_words: pd.DataFrame):
+    """
+    Horizontal bar chart showing terms that influenced Spam vs. Ham predictions.
+    """
+    if df_words.empty:
+        return None
+
+    chart = (
+        alt.Chart(df_words)
+        .mark_bar(cornerRadius=4, height=20)
+        .encode(
+            y=alt.Y(
+                "Word:N",
+                sort=alt.EncodingSortField(field="Impact Score", order="descending"),
+                title="Terms / N-grams"
+            ),
+            x=alt.X("Impact Score:Q", title="Weighted Log-Odds Contribution (Impact Score)"),
+            color=alt.Color(
+                "Direction:N",
+                scale=alt.Scale(
+                    domain=["Ham Indicator", "Spam Indicator"],
+                    range=["#22c55e", "#ef4444"]
+                ),
+                title="Influence Direction"
+            ),
+            tooltip=[
+                alt.Tooltip("Word:N", title="Term"),
+                alt.Tooltip("Direction:N", title="Indicator"),
+                alt.Tooltip("Impact Score:Q", title="Impact Score", format=".3f"),
+                alt.Tooltip("TF-IDF:Q", title="TF-IDF Weight", format=".3f"),
+                alt.Tooltip("Log-Ratio:Q", title="Log-Odds Ratio Δ", format=".3f")
+            ]
+        )
+        .properties(height=max(180, len(df_words) * 28))
+    )
+
+    rule = alt.Chart(pd.DataFrame({"x": [0]})).mark_rule(color="#6b7280", strokeDash=[3, 3]).encode(x="x:Q")
+    return chart + rule
 
 # ---------------------------------------------------------------------------
 # UI — Header
@@ -339,6 +483,25 @@ if st.session_state.result:
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(f"**Spam probability:** {spam_pct:.1f}%")
     st.progress(int(spam_pct))
+
+    # ── Visual Analysis & Explainability Expander (PBL / Academic Feature) ──
+    with st.expander("Visual Analysis & Model Explainability (Charts)", expanded=True):
+        st.markdown("#### 1. Prediction Probability Breakdown")
+        conf_chart = build_confidence_chart(spam_pct, ham_pct)
+        st.altair_chart(conf_chart, use_container_width=True)
+
+        st.markdown("#### 2. Term Influence Analysis (Explainable AI)")
+        st.caption(
+            "Visualizing the mathematical contribution of tokens in this message towards "
+            "classification using Naive Bayes log-odds impact."
+        )
+
+        df_contributions = get_feature_contributions(cleaned, top_n=10)
+        if df_contributions.empty:
+            st.info("No matching vocabulary tokens found in this message to compute individual term weights.")
+        else:
+            word_chart = build_word_impact_chart(df_contributions)
+            st.altair_chart(word_chart, use_container_width=True)
 
     # ── Details Expander ──────────────────────────────────────────────────
     with st.expander("Show analysis details"):
